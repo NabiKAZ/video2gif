@@ -1,5 +1,8 @@
 # video2gif
-A batch script for convert video to GIF files by FFmpeg.exe on Windows
+
+![sample gif file generated](sample.gif)
+
+A batch script for convert video to GIF files by FFmpeg.exe on Windows.
 
 ## Installation
 * Clone the repo
@@ -12,6 +15,7 @@ A batch script for convert video to GIF files by FFmpeg.exe on Windows
 video2gif myvideo.mp4
 ```
 Then you have `myvideo.gif` in current directory.
+
 If `myvideo.gif` there is existed, question from you for overwrite it.
 
 **Method #2:** You can just drag and drop `.gif` file on the `video2gif.bat` file.
@@ -22,7 +26,7 @@ If `myvideo.gif` there is existed, question from you for overwrite it.
 video2gif SOURCE_FILE [OPTIONS]
 ```
 
-##Options:
+## Options:
 ```
   SOURCE_FILE      Source video file name for convert
                    also you can drag and drop source video file to this batch file directly
