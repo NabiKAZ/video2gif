@@ -2,7 +2,7 @@
 
 ![sample gif file generated](sample.gif)
 
-A batch script for converting video files to GIF files using FFmpeg.exe on Windows.
+A batch script for converting video files to GIF files using FFmpeg on Windows.
 
 ## Installation
 * Clone the repo
