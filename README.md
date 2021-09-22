@@ -13,7 +13,7 @@ A batch script for converting video files to GIF files using FFmpeg.exe on Windo
 ```
 gifenc [input_file] [width_in_pixels] [framerate_in_Hz] [palettegen_mode] [Dithering_Algorithm]
 ```
-
+Always make sure the current directory is the same as the one the video file is in, otherwise the conversion will fail.
 ## Options:
 ```
 Palettegen Modes:
