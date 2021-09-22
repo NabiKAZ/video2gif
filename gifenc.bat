@@ -51,12 +51,12 @@ IF "%mode%" == "" GOTO :help_message
 IF "%dither%" == "" GOTO :help_message
 
 ECHO Creating Working Directory...
-MD %CD%\tmp
+MD "%WD%"
 
 ECHO Generating Palette...
-IF %mode% == 1 ffmpeg -v warning -i %vid% -vf "%filters%,palettegen=stats_mode=diff" -y %palette%.png
-IF %mode% == 2 ffmpeg -v warning -i %vid% -vf "%filters%,palettegen=stats_mode=single" -y %palette%_%%05d.png
-IF %mode% == 3 ffmpeg -v warning -i %vid% -vf "%filters%,palettegen" -y %palette%.png
+IF %mode% == 1 ffmpeg -v warning -i "%vid%" -vf "%filters%,palettegen=stats_mode=diff" -y "%palette%.png"
+IF %mode% == 2 ffmpeg -v warning -i "%vid%" -vf "%filters%,palettegen=stats_mode=single" -y "%palette%_%%05d.png"
+IF %mode% == 3 ffmpeg -v warning -i "%vid%" -vf "%filters%,palettegen" -y "%palette%.png"
 IF NOT EXIST "%palette%_00001.png" (
 	IF NOT EXIST "%palette%.png" (
 		ECHO Failed to generate palette file
@@ -66,27 +66,27 @@ IF NOT EXIST "%palette%_00001.png" (
 
 ECHO Encoding Gif file...
 IF %mode% == 1 (
-	IF %dither% == 1 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=bayer" -y %vid%.gif
-	IF %dither% == 2 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=heckbert" -y %vid%.gif
-	IF %dither% == 3 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=floyd_steinberg" -y %vid%.gif
-	IF %dither% == 4 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=sierra2" -y %vid%.gif
-	IF %dither% == 5 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=sierra2_4a" -y %vid%.gif
+	IF %dither% == 1 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=bayer" -y "%vid%.gif"
+	IF %dither% == 2 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=heckbert" -y "%vid%.gif"
+	IF %dither% == 3 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=floyd_steinberg" -y "%vid%.gif"
+	IF %dither% == 4 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=sierra2" -y "%vid%.gif"
+	IF %dither% == 5 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=sierra2_4a" -y "%vid%.gif"
 )
 
 IF %mode% == 2 (
-	IF %dither% == 1 ffmpeg -v warning -i %vid% -thread_queue_size 512 -i %palette%_%%05d.png -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=bayer" -y %vid%.gif
-	IF %dither% == 2 ffmpeg -v warning -i %vid% -thread_queue_size 512 -i %palette%_%%05d.png -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=heckbert" -y %vid%.gif
-	IF %dither% == 3 ffmpeg -v warning -i %vid% -thread_queue_size 512 -i %palette%_%%05d.png -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=floyd_steinberg" -y %vid%.gif
-	IF %dither% == 4 ffmpeg -v warning -i %vid% -thread_queue_size 512 -i %palette%_%%05d.png -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=sierra2" -y %vid%.gif
-	IF %dither% == 5 ffmpeg -v warning -i %vid% -thread_queue_size 512 -i %palette%_%%05d.png -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=sierra2_4a" -y %vid%.gif
+	IF %dither% == 1 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=bayer" -y "%vid%.gif"
+	IF %dither% == 2 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=heckbert" -y "%vid%.gif"
+	IF %dither% == 3 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=floyd_steinberg" -y "%vid%.gif"
+	IF %dither% == 4 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=sierra2" -y "%vid%.gif"
+	IF %dither% == 5 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=sierra2_4a" -y "%vid%.gif"
 )
 
 IF %mode% == 3 (
-	IF %dither% == 1 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=bayer" -y %vid%.gif
-	IF %dither% == 2 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=heckbert" -y %vid%.gif
-	IF %dither% == 3 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=floyd_steinberg" -y %vid%.gif
-	IF %dither% == 4 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=sierra2" -y %vid%.gif
-	IF %dither% == 5 ffmpeg -v warning -i %vid% -i %palette%.png -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=sierra2_4a" -y %vid%.gif
+	IF %dither% == 1 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=bayer" -y "%vid%.gif"
+	IF %dither% == 2 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=heckbert" -y "%vid%.gif"
+	IF %dither% == 3 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=floyd_steinberg" -y "%vid%.gif"
+	IF %dither% == 4 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=sierra2" -y "%vid%.gif"
+	IF %dither% == 5 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=sierra2_4a" -y "%vid%.gif"
 )
 
 IF NOT EXIST "%vid%.gif" (
@@ -96,7 +96,7 @@ IF NOT EXIST "%vid%.gif" (
 
 :cleanup
 ECHO Deleting Temporary files...
-DEL /Q %CD%\tmp
-RMDIR %CD%\tmp
+DEL /Q "%CD%\tmp"
+RMDIR "%CD%\tmp"
 	
 ECHO Done!
