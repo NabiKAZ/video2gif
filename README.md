@@ -29,10 +29,11 @@ Dithering Options:
       5 sierra2_4a
 ```
 
-## Example:
+## Examples:
 ```
   gifenc sample.mp4 300 15 1 1
-  gifenc sample.mp4 300 15 2 3
+  gifenc sample.mp4 600 10 2 3
+  gifenc sample.mp4 350 13 3 1
 
 ```
 
