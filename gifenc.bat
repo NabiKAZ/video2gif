@@ -61,6 +61,7 @@ IF %mode% == 1 SET encode=palettegen=stats_mode=diff
 IF %mode% == 2 (
 	SET encode=palettegen=stats_mode=single
 	SET frames=%palette%_%%05d
+)
 IF %mode% == 3 SET encode=palettegen
 ffmpeg -v warning -i "%vid%" -vf "%filters%,%encode%" -y "%frames%.png"
 IF NOT EXIST "%palette%_00001.png" (
