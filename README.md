@@ -22,11 +22,12 @@ Palettegen Modes:
       3: full - one palette for the whole gif
 -----------------------------------------------------------------------------------------------
 Dithering Options:
-      1: bayer
-      2: heckbert
-      3: floyd steinberg
-      4: sierra2
-      5 sierra2_4a
+      1: Bayer
+      2: Heckbert
+      3: Floyd Steinberg
+      4: Sierra2
+      5: Sierra2_4a
+      6: No Dithering
 ```
 
 ## Examples:
