@@ -1,7 +1,7 @@
 @ECHO OFF
 REM  By: MDHEXT, Nabi KaramAliZadeh <nabikaz@gmail.com>
 REM Description: Video to GIF converter
-REM Version: 2.0b
+REM Version: 2.2b
 REM Url: https://github.com/MDHEXT/video2gif, forked from https://github.com/NabiKAZ/video2gif
 REM License: The MIT License (MIT)
 
@@ -13,7 +13,7 @@ SET mode=%4
 
 SET dither=%5
 SET WD=%CD%\tmp
-SET palette=%CD%\tmp\template
+SET palette=%WD%\template
 SET filters=fps=%fps%,scale=%scale%:-1:flags=lanczos
 GOTO :help_check
 
@@ -107,7 +107,6 @@ ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%frames%" -lavfi "%filte
 
 :cleanup
 ECHO Deleting Temporary files...
-DEL /Q "%CD%\tmp"
-RMDIR "%CD%\tmp"
-	
+DEL /Q "%WD%"
+RMDIR "%WD%"
 ECHO Done!
