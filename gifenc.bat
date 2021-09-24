@@ -55,10 +55,14 @@ ECHO Creating Working Directory...
 MD "%WD%"
 
 ECHO Generating Palette...
+SET frames=%palette%
+
 IF %mode% == 1 SET encode=palettegen=stats_mode=diff
-IF %mode% == 2 SET encode=palettegen=stats_mode=single
+IF %mode% == 2 (
+	SET encode=palettegen=stats_mode=single
+	SET frames=%palette%_%%05d
 IF %mode% == 3 SET encode=palettegen
-ffmpeg -v warning -i "%vid%" -vf "%filters%,%encode%" -y "%palette%.png"
+ffmpeg -v warning -i "%vid%" -vf "%filters%,%encode%" -y "%frames%.png"
 IF NOT EXIST "%palette%_00001.png" (
 	IF NOT EXIST "%palette%.png" (
 		ECHO Failed to generate palette file
@@ -67,7 +71,7 @@ IF NOT EXIST "%palette%_00001.png" (
 )
 
 ECHO Encoding Gif file...
-SET frames=%palette%.png
+SET frames=%palette%
 
 IF %dither% == 1 SET ditherenc=dither=bayer
 IF %dither% == 2 SET ditherenc=dither=heckbert
@@ -79,11 +83,11 @@ IF %dither% == 6 GOTO :nodither
 IF %mode% == 1 SET decode=paletteuse=diff_mode=rectangle
 IF %mode% == 2 (
 	SET decode=paletteuse=new=1
-	SET frames=%palette%_%%05d.png
+	SET frames=%palette%_%%05d
 )
 IF %mode% == 3 SET decode=paletteuse
 
-ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%frames%" -lavfi "%filters% [x]; [x][1:v] %decode%:%ditherenc%" -y "%vid%.gif"
+ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%frames%.png" -lavfi "%filters% [x]; [x][1:v] %decode%:%ditherenc%" -y "%vid%.gif"
 
 IF NOT EXIST "%vid%.gif" (
 	ECHO Failed to generate gif file
