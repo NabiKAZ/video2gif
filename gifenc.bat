@@ -1,4 +1,4 @@
-@ECHO off
+@ECHO OFF
 REM  By: MDHEXT, Nabi KaramAliZadeh <nabikaz@gmail.com>
 REM Description: Video to GIF converter
 REM Version: 2.0b
@@ -33,11 +33,12 @@ ECHO 2: single - one palette per frame
 ECHO 3: full - one palette for the whole gif
 ECHO -----------------------------------------------------------------------------------------------
 ECHO Dithering Options:
-ECHO 1: bayer
-ECHO 2: heckbert
-ECHO 3: floyd steinberg
-ECHO 4: sierra2
-ECHO 5 sierra2_4a
+ECHO 1: Bayer
+ECHO 2: Heckbert
+ECHO 3: Floyd Steinberg
+ECHO 4: Sierra2
+ECHO 5: Sierra2_4a
+ECHO 6: No Dithering
 GOTO :EOF
 
 :help_check
@@ -54,9 +55,10 @@ ECHO Creating Working Directory...
 MD "%WD%"
 
 ECHO Generating Palette...
-IF %mode% == 1 ffmpeg -v warning -i "%vid%" -vf "%filters%,palettegen=stats_mode=diff" -y "%palette%.png"
-IF %mode% == 2 ffmpeg -v warning -i "%vid%" -vf "%filters%,palettegen=stats_mode=single" -y "%palette%_%%05d.png"
-IF %mode% == 3 ffmpeg -v warning -i "%vid%" -vf "%filters%,palettegen" -y "%palette%.png"
+IF %mode% == 1 SET encode=palettegen=stats_mode=diff
+IF %mode% == 2 SET encode=palettegen=stats_mode=single
+IF %mode% == 3 SET encode=palettegen
+ffmpeg -v warning -i "%vid%" -vf "%filters%,%encode%" -y "%palette%.png"
 IF NOT EXIST "%palette%_00001.png" (
 	IF NOT EXIST "%palette%.png" (
 		ECHO Failed to generate palette file
@@ -65,34 +67,38 @@ IF NOT EXIST "%palette%_00001.png" (
 )
 
 ECHO Encoding Gif file...
-IF %mode% == 1 (
-	IF %dither% == 1 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=bayer" -y "%vid%.gif"
-	IF %dither% == 2 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=heckbert" -y "%vid%.gif"
-	IF %dither% == 3 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=floyd_steinberg" -y "%vid%.gif"
-	IF %dither% == 4 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=sierra2" -y "%vid%.gif"
-	IF %dither% == 5 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=diff_mode=rectangle:dither=sierra2_4a" -y "%vid%.gif"
-)
+SET frames=%palette%.png
 
+IF %dither% == 1 SET ditherenc=dither=bayer
+IF %dither% == 2 SET ditherenc=dither=heckbert
+IF %dither% == 3 SET ditherenc=dither=floyd_steinberg
+IF %dither% == 4 SET ditherenc=sierra2
+IF %dither% == 5 SET ditherenc=sierra2_4a
+IF %dither% == 6 GOTO :nodither
+
+IF %mode% == 1 SET decode=paletteuse=diff_mode=rectangle
 IF %mode% == 2 (
-	IF %dither% == 1 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=bayer" -y "%vid%.gif"
-	IF %dither% == 2 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=heckbert" -y "%vid%.gif"
-	IF %dither% == 3 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=floyd_steinberg" -y "%vid%.gif"
-	IF %dither% == 4 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=sierra2" -y "%vid%.gif"
-	IF %dither% == 5 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%palette%_%%05d.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=new=1:dither=sierra2_4a" -y "%vid%.gif"
+	SET decode=paletteuse=new=1
+	SET frames=%palette%_%%05d.png
 )
+IF %mode% == 3 SET decode=paletteuse
 
-IF %mode% == 3 (
-	IF %dither% == 1 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=bayer" -y "%vid%.gif"
-	IF %dither% == 2 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=heckbert" -y "%vid%.gif"
-	IF %dither% == 3 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=floyd_steinberg" -y "%vid%.gif"
-	IF %dither% == 4 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=sierra2" -y "%vid%.gif"
-	IF %dither% == 5 ffmpeg -v warning -i "%vid%" -i "%palette%.png" -lavfi "%filters% [x]; [x][1:v] paletteuse=dither=sierra2_4a" -y "%vid%.gif"
-)
+ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%frames%" -lavfi "%filters% [x]; [x][1:v] %decode%:%ditherenc%" -y "%vid%.gif"
 
 IF NOT EXIST "%vid%.gif" (
 	ECHO Failed to generate gif file
 	GOTO :cleanup
 )
+GOTO :cleanup
+
+:nodither
+IF %mode% == 1 SET decode=paletteuse=diff_mode=rectangle
+IF %mode% == 2 (
+	SET decode=paletteuse=new=1
+	SET frames=%palette%_%%05d.png
+)
+IF %mode% == 3 SET decode=paletteuse
+ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%frames%" -lavfi "%filters% [x]; [x][1:v] %decode%" -y "%vid%.gif"
 
 :cleanup
 ECHO Deleting Temporary files...
