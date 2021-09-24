@@ -68,24 +68,22 @@ IF NOT EXIST "%palette%_00001.png" (
 	IF NOT EXIST "%palette%.png" (
 		ECHO Failed to generate palette file
 		GOTO :cleanup
-	)
+		)
 )
 
 ECHO Encoding Gif file...
 SET frames=%palette%
 
-IF %dither% == 1 SET ditherenc=dither=bayer
-IF %dither% == 2 SET ditherenc=dither=heckbert
-IF %dither% == 3 SET ditherenc=dither=floyd_steinberg
-IF %dither% == 4 SET ditherenc=sierra2
-IF %dither% == 5 SET ditherenc=sierra2_4a
+IF %dither% == 1 SET ditherenc=dither=bayer & GOTO :ditheringenc
+IF %dither% == 2 SET ditherenc=dither=heckbert & GOTO :ditheringenc
+IF %dither% == 3 SET ditherenc=dither=floyd_steinberg & GOTO :ditheringenc
+IF %dither% == 4 SET ditherenc=sierra2 & GOTO :ditheringenc
+IF %dither% == 5 SET ditherenc=sierra2_4a & GOTO :ditheringenc
 IF %dither% == 6 GOTO :nodither
 
+:ditheringenc
 IF %mode% == 1 SET decode=paletteuse=diff_mode=rectangle
-IF %mode% == 2 (
-	SET decode=paletteuse=new=1
-	SET frames=%palette%_%%05d
-)
+IF %mode% == 2 SET decode=paletteuse=new=1 & SET frames=%palette%_%%05d
 IF %mode% == 3 SET decode=paletteuse
 
 ffmpeg -v warning -i "%vid%" -thread_queue_size 512 -i "%frames%.png" -lavfi "%filters% [x]; [x][1:v] %decode%:%ditherenc%" -y "%vid%.gif"
